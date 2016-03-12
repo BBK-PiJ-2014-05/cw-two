@@ -77,13 +77,13 @@ abstract class gameAbstractImpl extends Game {
     }
     val guess = getGuess()
     val feedBackList = getFeedBack(guess,secretCode)
-    print(feedBackList.toString())
+    //print(feedBackList.toString())
     if (feedBackList.forall(x=>x.equals("Black"))){
       gameWon = true
     }
-      val newList = list.updated(guessList.size - guessesLeft,guess + feedBackList.toString())
+      val newList = list.updated(guessList.size - guessesLeft,guess + " Result: " + feedBackList.mkString(","))
       showGuessList(newList)
-      startGuessing(list,guessesLeft-1)
+      startGuessing(newList,guessesLeft-1)
     }
 
 
@@ -111,14 +111,7 @@ abstract class gameAbstractImpl extends Game {
   }
 
   def colourListString(colourSetMap:Map[String,String]):String={
-    var result:String = ""
-    val size = colourSetMap.size
-
-
-    for (x <- colourSetMap.values){
-      result += x.toString + ", "
-
-    }
+    val result:String = colourSetMap.values.mkString(", ")
     result
   }
 
