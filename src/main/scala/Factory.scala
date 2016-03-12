@@ -13,15 +13,21 @@ object Factory {
     val codeLength = 4
     val numberOfGuesses = 12
 
-    val g = new GameImpl
+    val g = new GameImpl(b)
     g.setColourSetMap(colourSetMap)
     val emptyList = List[String]()
     val secretCode = generateCode(emptyList,codeLength,colourSetMap)
     g.setSecretCode(secretCode)
+    g.setGuessList(initGuessList(numberOfGuesses))
 
 
 
     g
+  }
+
+  def initGuessList(x:Int):List[String]={
+    val initGuessList = List.fill(x)("....")
+    initGuessList
   }
 
 
@@ -59,6 +65,7 @@ object Factory {
     }
 
     def generateCode(list: List[String], codeLength: Int, colourSetMap: Map[String, String]): List[String] = {
+
       val colourList = colourSetMap.keySet.toList
       if (list.length == codeLength) {
         list
