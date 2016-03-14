@@ -1,9 +1,6 @@
-/**
-  * Created by geoff_000 on 11/03/2016.
-  */
 
 import scala.collection.mutable.ListBuffer
-import scala.io.StdIn.{readLine,readInt}
+import scala.io.StdIn.{readLine}
 
 abstract class gameAbstractImpl extends Game {
 
@@ -142,6 +139,13 @@ abstract class gameAbstractImpl extends Game {
 
   }
 
+  /**
+    * prints the values in the colourSetMap
+    *
+    * @param colourSetMap
+    * @return
+    */
+
   def colourListString(colourSetMap:Map[String,String]):String={
     val result:String = colourSetMap.values.mkString(", ")
     result
@@ -159,20 +163,20 @@ abstract class gameAbstractImpl extends Game {
   def getFeedBack(guess: String, codeList: List[String]): List[String] = {
     val feedBack = ListBuffer[String]()
     val guessRemaining = guess.toCharArray.toBuffer
-    val codeLeft = codeList.toArray[String].toBuffer
+    val secretCodeRemaining = codeList.toArray[String].toBuffer
 
-    var zipped = guessRemaining zip codeLeft
+    var zipped = guessRemaining zip secretCodeRemaining
       for((a,b) <- zipped){
         if (a.toString.equals(b)){
           feedBack += "Black"
           guessRemaining -= a
-          codeLeft -= b
+          secretCodeRemaining -= b
         }
       }
       for(c <- guessRemaining){
-        if (codeLeft.contains(c.toString)){
+        if (secretCodeRemaining.contains(c.toString)){
           feedBack += "White"
-          codeLeft -= c.toString
+          secretCodeRemaining -= c.toString
         }
       }
       if(feedBack.isEmpty) feedBack += "No Pegs!"

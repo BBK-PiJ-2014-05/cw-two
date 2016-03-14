@@ -1,8 +1,4 @@
-/**
-  * Created by geoff_000 on 14/03/2016.
-  */
 
-import com.softwaremill.macwire._
 
 class GameProps {
 
@@ -16,14 +12,5 @@ class GameProps {
   def getColourValues = COLOURS.values
   def getGuessSize = GUESSSIZE
   def getNumberOfGuesses = NUMBEROFGUESSES
-
-
- // object GameProps {
-
-   //   COLOURS = Map("O" -> "orange", "B" -> "blue", "G" -> "green", "P" -> "purple", "R" -> "red", "Y" -> "yellow")
-     // GUESSSIZE = 4
-      //NUMBEROFGUESSES = 12
-
-    //}
 
 }

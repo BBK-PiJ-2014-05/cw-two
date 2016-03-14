@@ -1,7 +1,4 @@
 
-
-import scala.collection.mutable.ListBuffer
-
 /**
   * A factory to produce a valid instance of a game
   *
@@ -12,9 +9,6 @@ import scala.collection.mutable.ListBuffer
 import com.softwaremill.macwire._
 
 object Factory {
-
-
-  //var game:gameAbstractImpl = null
 
   def getInstance(c: Class[_], b: Boolean): Game = {
 
@@ -27,7 +21,7 @@ object Factory {
 
 
     lazy val gameProps = wire[GameProps]
-    //lazy val g = wire[GameImpl] how to do this using the def this() method supplied?
+    //lazy val g = wire[GameImpl] how to use this DI method using the def this() method supplied?
 
     val g:gameAbstractImpl = new GameImpl(b)
 
