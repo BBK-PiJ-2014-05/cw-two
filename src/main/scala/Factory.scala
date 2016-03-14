@@ -3,25 +3,34 @@
 import scala.collection.mutable.ListBuffer
 
 /**
-  * Created by geoff_000 on 11/03/2016.
+  * A factory to produce a valid instance of a game
+  *
+  *
+  *
   */
 object Factory {
 
+
+  //var game:gameAbstractImpl = null
+
   def getInstance(c: Class[_], b: Boolean): Game = {
 
-    val colourSetMap = Map("O" -> "Orange", "B" -> "Black", "S" -> "Scarlet", "P" -> "Purple", "D" -> "Dark", "Y" -> "Yellow")
+    /**
+      * the members colourSetMap, codeLength and numberOfGuesses form the base parameters of a game. These could be contained in a separate file (such as a Beans properties file)
+      * so the values of each could be injected into a game object
+      */
+    val colourSetMap = Map("O" -> "orange", "B" -> "blue", "G" -> "green", "P" -> "purple", "R" -> "red", "Y" -> "yellow")
     val codeLength = 4
     val numberOfGuesses = 12
 
-    val g = new GameImpl(b)
+
+    var g:gameAbstractImpl = new GameImpl(b)
+
+
     g.setColourSetMap(colourSetMap)
-    val emptyList = List[String]()
-    val secretCode = generateCode(emptyList,codeLength,colourSetMap)
+    val secretCode = generateCode(List[String](),codeLength,colourSetMap)
     g.setSecretCode(secretCode)
     g.setGuessList(initGuessList(numberOfGuesses))
-
-
-
     g
   }
 
@@ -32,37 +41,18 @@ object Factory {
 
 
 
-    def validGuess(guess: String, colourSetMap: Map[String, String]): Boolean = {
-      var response = true
-      for (c <- guess) {
-        if (!colourSetMap.contains(c.toString)) {
-          response = false
-        }
-      }
-      response
-    }
 
-    def getFeedBack(guess: String, codeList: List[String]): List[String] = {
-      val feedBack = ListBuffer[String]()
-      var x = 0
-      for (i <- guess) {
-        if (i.toString.equals(codeList(x))) {
-          feedBack += "Black"
-        }
-        else if (codeList.contains(i.toString)) {
-          feedBack += "White"
-        }
-        x += 1
-      }
-      if (feedBack.forall(x => x.equals("Black"))) {
-        //gameWon = true
-      }
-      if (feedBack.isEmpty) {
-        feedBack += "No Pegs!"
-      }
-      val feedBackList = feedBack.toList
-      feedBackList.sorted
-    }
+
+
+  /**
+    * A recursive method to generate the secret code as an immutable list using the set of available colours and the desired
+    * length of the code
+    *
+     * @param list
+    * @param codeLength
+    * @param colourSetMap
+    * @return
+    */
 
     def generateCode(list: List[String], codeLength: Int, colourSetMap: Map[String, String]): List[String] = {
 

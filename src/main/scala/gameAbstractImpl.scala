@@ -44,8 +44,22 @@ abstract class gameAbstractImpl extends Game {
     showCode = easy
   }
 
-  def validGuess(guess:String,colourSetMap:Map[String,String]):Boolean={
+
+  /**
+    * a valid guess contains only chars from the set of available colours and is of the same length as the secret code
+    * 8
+    * @param guess
+    * @param colourSetMap
+    * @param secretCode
+    * @return
+    */
+
+  def validGuess(guess:String,colourSetMap:Map[String,String],secretCode:List[String]):Boolean={
     var response = true
+    if(guess.length != secretCode.length){
+      response = false
+    }
+
     for (c <- guess) {
       if (!colourSetMap.contains(c.toString)) {
         response = false
@@ -54,59 +68,77 @@ abstract class gameAbstractImpl extends Game {
     response
   }
 
+  /**
+    * prints the list of all previous guesses (with feedback)
+    *
+    * @param list
+    */
+
   def showGuessList(list:List[String])={
     for(x <-list){
       println(x.toString)
     }
   }
 
-  def showCodeInGame(secretCode:List[String],showCode:Boolean)={
-    var visible = "Secret Code: "
-    if(showCode == true){
-      for(x <-secretCode){
-        visible += x.toString
-      }
+  /**
+    * If true the code is revealed throughout the game
+    *
+    * @param secretCode
+    * @param showCode
+    */
+
+  def showCodeInGame(secretCode:List[String],showCode:Boolean)= {
+    var visible = " "
+    if (showCode == true) {
+      println(visible + secretCode.mkString(","))
     }
-    println(" ")
   }
 
 
-  def startGuessing(list:List[String],guessesLeft:Int):List[String]={
-    if (guessesLeft == 0){
-      list
-    }
-    val guess = getGuess()
-    val feedBackList = getFeedBack(guess,secretCode)
-    //print(feedBackList.toString())
-    if (feedBackList.forall(x=>x.equals("Black"))){
-      gameWon = true
-    }
-      val newList = list.updated(guessList.size - guessesLeft,guess + " Result: " + feedBackList.mkString(","))
+  /**
+    * The player runs through a cycle of guessing until a correct guess is provided or the player has run out of guesses
+    *
+    * @param list
+    * @param guessesLeft
+    * @return
+    */
+
+  def startGuessing(list:List[String],guessesLeft:Int):List[String]= {
+
+      if (guessesLeft == 0 || gameWon) {
+        return list
+      }
+      val guess = getGuess()
+      val feedBackList = getFeedBack(guess, secretCode)
+
+      if (feedBackList.size == secretCode.size &&  feedBackList.forall(x => x.equals("Black"))) {
+        gameWon = true
+      }
+      val newList = list.updated(guessList.size - guessesLeft, guess + " Result: " + feedBackList.mkString(","))
       showGuessList(newList)
-      startGuessing(newList,guessesLeft-1)
+      startGuessing(newList, guessesLeft - 1)
     }
 
 
+  /**
+    * The player is prompted for a guess until a valid guess is provided.
+    *
+    * @return
+    */
 
   def getGuess():String= {
-    val guess = readLine("Next guess: ")
-    if (!validGuess(guess,colourSetMap)){
-      getGuess
+    var guess = ""
+    while (!validGuess(guess,colourSetMap,secretCode)){
+      guess = readLine("Next guess: ")
     }
     guess
 
   }
 
-
+  /**
+    * implemented in the concrete class GameImpl
+    */
   def runGames={
-    intro(colourSetMap)
-    print("Secret code: ")
-    showCodeInGame(secretCode,showCode)
-    showGuessList(guessList)
-    startGuessing(guessList,guessList.size)
-
-
-
 
   }
 
@@ -115,30 +147,67 @@ abstract class gameAbstractImpl extends Game {
     result
   }
 
+  /**
+    * Get feedback after each guess. A feedback consists of either 0..n Black followed by 0..n White or No Pegs!
+    *
+    * @param guess
+    * @param codeList
+    * @return
+    */
+
+
   def getFeedBack(guess: String, codeList: List[String]): List[String] = {
     val feedBack = ListBuffer[String]()
-    var x = 0
-    for (i <- guess) {
-      if (i.toString.equals(codeList(x))) {
-        feedBack += "Black"
+    val guessRemaining = guess.toCharArray.toBuffer
+    val codeLeft = codeList.toArray[String].toBuffer
+
+    var zipped = guessRemaining zip codeLeft
+      for((a,b) <- zipped){
+        if (a.toString.equals(b)){
+          feedBack += "Black"
+          guessRemaining -= a
+          codeLeft -= b
+        }
       }
-      else if (codeList.contains(i.toString)) {
-        feedBack += "White"
+      for(c <- guessRemaining){
+        if (codeLeft.contains(c.toString)){
+          feedBack += "White"
+          codeLeft -= c.toString
+        }
       }
-      x += 1
-    }
-    if (feedBack.forall(x => x.equals("Black"))) {
-      //gameWon = true
-    }
-    if (feedBack.isEmpty) {
-      feedBack += "No Pegs!"
-    }
-    val feedBackList = feedBack.toList
-    feedBackList.sorted
+      if(feedBack.isEmpty) feedBack += "No Pegs!"
+    val result = feedBack.toList
+    result
   }
 
 
+  /**
+    * This script runs after a game is won or the player has run out of guesses
+    *
+    * @return
+    */
 
+  def endGame():Boolean={
+
+    if(gameWon){
+      println("\nWell Done- You guessed correctly!\n")
+      println("The secret code was " + secretCode.mkString(",") +  " \n")
+    } else {
+      println("\nToo Bad- you ran out of guesses before making the correct guess!\n")
+      println("The secret code was " + secretCode.mkString(",") +  " \n")
+    }
+    val choice = readLine("Press 'k' to quit or any other key to play again.")
+    if(choice.equals("k")){
+      return true
+    } else return false
+
+  }
+
+  /**
+    * The introduction to the game including instructions on how to play
+    *
+    * @param colourSetMap
+    */
 
   def intro(colourSetMap:Map[String,String])={
     println("Welcome to Mastermind.\n\n" +
