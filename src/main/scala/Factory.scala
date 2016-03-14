@@ -8,6 +8,9 @@ import scala.collection.mutable.ListBuffer
   *
   *
   */
+
+import com.softwaremill.macwire._
+
 object Factory {
 
 
@@ -16,21 +19,22 @@ object Factory {
   def getInstance(c: Class[_], b: Boolean): Game = {
 
     /**
-      * the members colourSetMap, codeLength and numberOfGuesses form the base parameters of a game. These could be contained in a separate file (such as a Beans properties file)
-      * so the values of each could be injected into a game object
+      * Using a factory to initialize a Game object using a properties file GameProps. The properties file contains the
+      * members required to initialize a game instance. The wiring is through MacWire. Not successful in using the MacWire
+      * macro to initialize a GameImpl which takes a boolean constructor. Not sure how to do this so instead the concrete
+      * class of Game is via new keyword.
       */
-    val colourSetMap = Map("O" -> "orange", "B" -> "blue", "G" -> "green", "P" -> "purple", "R" -> "red", "Y" -> "yellow")
-    val codeLength = 4
-    val numberOfGuesses = 12
 
 
-    var g:gameAbstractImpl = new GameImpl(b)
+    lazy val gameProps = wire[GameProps]
+    //lazy val g = wire[GameImpl] how to do this using the def this() method supplied?
 
+    val g:gameAbstractImpl = new GameImpl(b)
 
-    g.setColourSetMap(colourSetMap)
-    val secretCode = generateCode(List[String](),codeLength,colourSetMap)
+    g.setColourSetMap(gameProps.getColourSetMap)
+    val secretCode = generateCode(List[String](),gameProps.getGuessSize,gameProps.getColourSetMap)
     g.setSecretCode(secretCode)
-    g.setGuessList(initGuessList(numberOfGuesses))
+    g.setGuessList(initGuessList(gameProps.getNumberOfGuesses))
     g
   }
 
@@ -38,9 +42,6 @@ object Factory {
     val initGuessList = List.fill(x)("....")
     initGuessList
   }
-
-
-
 
 
 
