@@ -13,11 +13,11 @@ object MastermindDriver {
 
       }
 
+    } else {
+
+      val g = Factory.getInstance(classOf[Game], false)
+      g.runGames
     }
-
-    val g = Factory.getInstance(classOf[Game],false)
-    g.runGames
-
 
   }
 }
